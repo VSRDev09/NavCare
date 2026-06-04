@@ -36,12 +36,10 @@ Backend da aplicação **Nav.Care**, responsável pelos CRUDs de Especialidades 
 - `OPENAI_BASE_URL`
 - `OPENAI_MODEL`
 - `OPENAI_TIMEOUT_SECONDS`
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
 - `JWT_SECRET`
 - `JWT_EXPIRATION_MINUTES`
 
-As credenciais administrativas são definidas apenas por variáveis de ambiente. Não deixe senha fixa no código nem no repositório.
+As credenciais administrativas agora são persistidas no PostgreSQL pela migration de seed. Não deixe senha fixa no código nem no repositório.
 
 ## Execução
 

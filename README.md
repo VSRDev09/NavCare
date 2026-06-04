@@ -10,12 +10,13 @@
 
 ## Fluxo principal
 
-1. O administrador cadastra especialidades e regras de atendimento.
-2. O paciente envia um relato em texto livre.
-3. O backend chama a IA com as especialidades cadastradas no banco.
-4. A IA devolve especialidade, urgência e resumo.
-5. O backend busca as regras associadas e devolve a resposta enriquecida.
-6. O frontend exibe o resultado de forma clara, bonita e responsiva.
+1. O administrador faz login com credenciais persistidas no PostgreSQL.
+2. O administrador cadastra especialidades e regras de atendimento.
+3. O paciente envia um relato em texto livre.
+4. O backend chama a IA com as especialidades cadastradas no banco.
+5. A IA devolve especialidade, urgência e resumo.
+6. O backend busca as regras associadas e devolve a resposta enriquecida.
+7. O frontend exibe o resultado de forma clara, bonita e responsiva.
 
 ## Identidade visual
 
@@ -44,6 +45,8 @@ O projeto usa um `.env` na raiz para centralizar a configuração sensível do b
 - `OPENAI_BASE_URL`
 - `OPENAI_MODEL`
 - `OPENAI_TIMEOUT_SECONDS`
+- `JWT_SECRET`
+- `JWT_EXPIRATION_MINUTES`
 
 ### Como usar
 
