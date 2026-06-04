@@ -1,0 +1,101 @@
+<section class="page-shell">
+  <div class="container">
+    <div class="page-head">
+      <div>
+        <h1 class="section-title">Regras de Atendimento</h1>
+        <p class="section-subtitle">Gerencie os parâmetros que enriquecem a resposta da triagem.</p>
+      </div>
+      <div class="page-head-actions">
+        <a class="btn btn-secondary" routerLink="/specialties">Ir para Especialidades</a>
+        <button class="btn btn-primary" type="button" (click)="resetForm()">Nova Regra</button>
+      </div>
+    </div>
+
+    <section class="card form-card">
+      <div class="card-header">
+        <div>
+          <h2>{{ editingId ? 'Editar Regra' : 'Nova Regra' }}</h2>
+          <p>Associe a regra a uma especialidade cadastrada.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+        <div>
+          <label class="label" for="specialtyId">Especialidade</label>
+          <select id="specialtyId" class="select" formControlName="specialtyId">
+            <option [ngValue]="null">Selecione</option>
+            <option *ngFor="let specialty of specialties" [ngValue]="specialty.id">{{ specialty.name }}</option>
+          </select>
+          <div class="field-error" *ngIf="isInvalid('specialtyId')">Selecione uma especialidade.</div>
+        </div>
+
+        <div>
+          <label class="label" for="averageWaitTime">Tempo médio de espera</label>
+          <input id="averageWaitTime" class="input" type="number" formControlName="averageWaitTime" min="1">
+          <div class="field-error" *ngIf="isInvalid('averageWaitTime')">Informe um valor maior que zero.</div>
+        </div>
+
+        <div>
+          <label class="label" for="acceptsEmergency">Aceita emergência</label>
+          <select id="acceptsEmergency" class="select" formControlName="acceptsEmergency">
+            <option [ngValue]="true">Sim</option>
+            <option [ngValue]="false">Não</option>
+          </select>
+          <div class="field-error" *ngIf="isInvalid('acceptsEmergency')">Selecione uma opção válida.</div>
+        </div>
+
+        <div>
+          <label class="label" for="notes">Observações</label>
+          <textarea id="notes" class="textarea" rows="4" formControlName="notes" placeholder="Observações da regra"></textarea>
+          <div class="field-error" *ngIf="isInvalid('notes')">Informe observações válidas.</div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" [disabled]="loading$ | async">
+            {{ editingId ? 'Salvar Alterações' : 'Salvar Regra' }}
+          </button>
+          <button class="btn btn-secondary" type="button" (click)="resetForm()">Limpar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <div>
+          <h2>Regras cadastradas</h2>
+          <p>Essas informações aparecem na resposta final da triagem.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap" *ngIf="rules.length; else emptyState">
+        <table>
+          <thead>
+            <tr>
+              <th>Especialidade</th>
+              <th>Espera</th>
+              <th>Emergência</th>
+              <th>Observações</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rule of rules">
+              <td>{{ rule.specialtyName }}</td>
+              <td>{{ rule.averageWaitTime }} min</td>
+              <td>{{ rule.acceptsEmergency ? 'Sim' : 'Não' }}</td>
+              <td>{{ rule.notes }}</td>
+              <td class="actions">
+                <button class="btn btn-secondary" type="button" (click)="edit(rule)">Editar</button>
+                <button class="btn btn-danger" type="button" (click)="remove(rule)">Excluir</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">Nenhuma regra de atendimento cadastrada ainda.</div>
+      </ng-template>
+    </section>
+  </div>
+</section>

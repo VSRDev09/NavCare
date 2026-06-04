@@ -1,0 +1,7 @@
+<div class="loading-overlay" *ngIf="loading$ | async">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <strong>Nav.Care</strong>
+    <span>{{ message$ | async }}</span>
+  </div>
+</div>

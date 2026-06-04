@@ -1,0 +1,110 @@
+<section class="page-shell">
+  <div class="container">
+    <div class="hero card">
+      <div class="hero-copy">
+        <span class="hero-kicker">🏥 Nav.Care</span>
+        <h1 class="section-title">Triagem Inteligente para Direcionamento Médico</h1>
+        <p class="section-subtitle">
+          Descreva seus sintomas para receber uma orientação inicial clara, humana e organizada.
+        </p>
+      </div>
+      <div class="hero-pill">
+        <span>Agilidade</span>
+        <span>Segurança</span>
+        <span>Confiança</span>
+      </div>
+    </div>
+
+    <div class="triage-layout">
+      <section class="card triage-form">
+        <div class="card-header">
+          <div>
+            <h2>Relato do paciente</h2>
+            <p>Informe os sintomas com o máximo de detalhes possível. Mínimo recomendado: 15 caracteres.</p>
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="form-stack">
+          <div>
+            <label class="label" for="report">Relato médico</label>
+            <textarea
+              id="report"
+              class="textarea"
+              rows="8"
+              formControlName="report"
+              placeholder="Ex.: Estou com uma dor de cabeça muito forte há três dias e minha visão está embaçada."
+            ></textarea>
+            <div class="field-hint">Para começar, escreva pelo menos 15 caracteres.</div>
+            <div class="field-error" *ngIf="isInvalid('report')">
+              Escreva um relato com pelo menos 15 caracteres.
+            </div>
+          </div>
+
+          <button class="btn btn-primary submit-btn" type="submit" [disabled]="(loading$ | async) || form.invalid">
+            <span class="button-spinner" *ngIf="loading$ | async"></span>
+            Encaminhar Relato
+          </button>
+        </form>
+      </section>
+
+      <aside class="card triage-info">
+        <h2>Como funciona</h2>
+        <ul>
+          <li>Você descreve o que está sentindo.</li>
+          <li>A IA identifica a especialidade mais adequada.</li>
+          <li>O Nav.Care cruza o resultado com as regras cadastradas.</li>
+          <li>Você recebe uma resposta enxuta e visualmente clara.</li>
+        </ul>
+      </aside>
+    </div>
+
+    <section class="result-grid" *ngIf="result as triage">
+      <article class="card result-card" [ngClass]="getUrgencyClass()">
+        <div class="result-header">
+          <div>
+            <span class="result-kicker">Especialidade recomendada</span>
+            <h2>{{ triage.specialty }}</h2>
+          </div>
+          <div class="badge" [ngClass]="getUrgencyClass() === 'urgency-high' ? 'badge-red' : getUrgencyClass() === 'urgency-medium' ? 'badge-yellow' : 'badge-blue'">
+            {{ triage.urgency }}
+          </div>
+        </div>
+
+        <p class="result-summary">{{ triage.summary }}</p>
+        <div class="urgency-message">{{ getUrgencyMessage() }}</div>
+      </article>
+
+      <article class="card rules-card">
+        <div class="card-header">
+          <div>
+            <h3>Informações da especialidade</h3>
+            <p>Dados vindos das regras cadastradas no banco.</p>
+          </div>
+        </div>
+
+        <ng-container *ngIf="triage.attendanceRules.length; else noRules">
+          <div class="rule-item" *ngFor="let rule of triage.attendanceRules">
+            <div class="rule-main">
+              <strong>Tempo médio de espera:</strong>
+              <span>{{ rule.averageWaitTime }} minutos</span>
+            </div>
+            <div class="rule-main">
+              <strong>Aceita emergência:</strong>
+              <span>{{ rule.acceptsEmergency ? 'Sim' : 'Não' }}</span>
+            </div>
+            <div class="rule-notes">
+              <strong>Observações:</strong>
+              <span>{{ rule.notes }}</span>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noRules>
+          <div class="empty-state">
+            Nenhuma regra de atendimento cadastrada para esta especialidade.
+          </div>
+        </ng-template>
+      </article>
+    </section>
+  </div>
+</section>

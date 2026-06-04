@@ -1,0 +1,13 @@
+backend/target/
+frontend/node_modules/
+frontend/dist/
+.angular/
+.idea/
+.vscode/
+.env
+backend/.env
+frontend/.env
+*.log
+*.iml
+Thumbs.db
+Desktop.ini

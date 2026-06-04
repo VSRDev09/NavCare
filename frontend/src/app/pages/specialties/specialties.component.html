@@ -1,0 +1,79 @@
+<section class="page-shell">
+  <div class="container">
+    <div class="page-head">
+      <div>
+        <h1 class="section-title">Especialidades Médicas</h1>
+        <p class="section-subtitle">Cadastre e mantenha atualizadas as especialidades utilizadas pela triagem.</p>
+      </div>
+      <div class="page-head-actions">
+        <a class="btn btn-secondary" routerLink="/rules">Ir para Regras</a>
+        <button class="btn btn-primary" type="button" (click)="resetForm()">Nova Especialidade</button>
+      </div>
+    </div>
+
+    <section class="card form-card">
+      <div class="card-header">
+        <div>
+          <h2>{{ editingId ? 'Editar Especialidade' : 'Nova Especialidade' }}</h2>
+          <p>Preencha nome e descrição com clareza.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+        <div>
+          <label class="label" for="name">Nome</label>
+          <input id="name" class="input" type="text" formControlName="name" placeholder="Ex.: Cardiologia">
+          <div class="field-error" *ngIf="isInvalid('name')">Informe um nome válido.</div>
+        </div>
+
+        <div>
+          <label class="label" for="description">Descrição</label>
+          <textarea id="description" class="textarea" rows="4" formControlName="description" placeholder="Descrição da especialidade"></textarea>
+          <div class="field-error" *ngIf="isInvalid('description')">Informe uma descrição válida.</div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" [disabled]="loading$ | async">
+            {{ editingId ? 'Salvar Alterações' : 'Salvar Especialidade' }}
+          </button>
+          <button class="btn btn-secondary" type="button" (click)="resetForm()">Limpar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card table-card">
+      <div class="card-header">
+        <div>
+          <h2>Especialidades cadastradas</h2>
+          <p>Esses dados são utilizados diretamente no fluxo de triagem.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap" *ngIf="specialties.length; else emptyState">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Descrição</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let specialty of specialties">
+              <td>{{ specialty.name }}</td>
+              <td>{{ specialty.description }}</td>
+              <td class="actions">
+                <button class="btn btn-secondary" type="button" (click)="edit(specialty)">Editar</button>
+                <button class="btn btn-danger" type="button" (click)="remove(specialty)">Excluir</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">Nenhuma especialidade cadastrada ainda.</div>
+      </ng-template>
+    </section>
+  </div>
+</section>

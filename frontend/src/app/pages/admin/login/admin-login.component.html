@@ -1,0 +1,31 @@
+<section class="page-shell">
+  <div class="container">
+    <div class="card admin-auth-card">
+      <div class="admin-auth-copy">
+        <span class="hero-kicker">🔐 Área Administrativa</span>
+        <h1 class="section-title">Acesso administrativo</h1>
+        <p class="section-subtitle">
+          Faça login para gerenciar especialidades e regras de atendimento.
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="admin-auth-form">
+        <div>
+          <label class="label" for="username">Usuário</label>
+          <input id="username" class="input" type="text" formControlName="username" placeholder="admin">
+          <div class="field-error" *ngIf="isInvalid('username')">Informe o usuário.</div>
+        </div>
+
+        <div>
+          <label class="label" for="password">Senha</label>
+          <input id="password" class="input" type="password" formControlName="password" placeholder="••••••••">
+          <div class="field-error" *ngIf="isInvalid('password')">Informe a senha.</div>
+        </div>
+
+        <button class="btn btn-primary" type="submit" [disabled]="loading$ | async">
+          Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

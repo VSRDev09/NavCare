@@ -1,0 +1,6 @@
+<div class="toast-host" *ngIf="toast$ | async as toast">
+  <div class="toast" [ngClass]="getClassName(toast)">
+    <span>{{ toast.message }}</span>
+    <button type="button" (click)="close()">×</button>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<section class="page-shell">
+  <div class="container">
+    <div class="card admin-dashboard">
+      <div>
+        <span class="hero-kicker">🔒 Área Administrativa</span>
+        <h1 class="section-title">Painel do Admin</h1>
+        <p class="section-subtitle">
+          Usuário autenticado: <strong>{{ authService.getUsername() }}</strong>
+        </p>
+      </div>
+
+      <div class="admin-actions">
+        <a class="btn btn-primary" routerLink="/specialties">Gerenciar Especialidades</a>
+        <a class="btn btn-secondary" routerLink="/rules">Gerenciar Regras</a>
+        <button class="btn btn-danger" type="button" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </div>
+</section>

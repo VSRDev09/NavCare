@@ -1,0 +1,11 @@
+.admin-dashboard {
+  padding: 1.6rem;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
