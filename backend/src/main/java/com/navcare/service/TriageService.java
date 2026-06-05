@@ -17,7 +17,7 @@ import com.navcare.entity.AttendanceRule;
 import com.navcare.entity.Specialty;
 import com.navcare.exception.AiIntegrationException;
 import com.navcare.exception.ResourceNotFoundException;
-import com.navcare.integration.ai.OpenAiClient;
+import com.navcare.integration.ai.GeminiClient;
 import com.navcare.mapper.AttendanceRuleMapper;
 import com.navcare.repository.AttendanceRuleRepository;
 import com.navcare.repository.SpecialtyRepository;
@@ -37,7 +37,7 @@ public class TriageService {
 
     private final SpecialtyRepository specialtyRepository;
     private final AttendanceRuleRepository attendanceRuleRepository;
-    private final OpenAiClient openAiClient;
+    private final GeminiClient geminiClient;
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
@@ -65,10 +65,15 @@ public class TriageService {
     private AiTriageResultDTO analyzeWithAiOrFallback(String report, List<Specialty> specialties) {
         try {
             String prompt = buildPrompt(report, specialties);
-            String rawResponse = openAiClient.analyze(prompt, report);
+            String rawResponse = geminiClient.analyze(prompt, report);
             return parseAiResponse(rawResponse);
         } catch (Exception exception) {
-            log.warn("Falha na IA. Usando fallback local para a triagem. Motivo: {}", exception.getMessage());
+            log.warn(
+                "Falha na IA. Usando fallback local para a triagem. Tipo={}, Motivo={}",
+                exception.getClass().getSimpleName(),
+                exception.getMessage(),
+                exception
+            );
             return localFallbackAnalysis(report, specialties);
         }
     }
@@ -96,7 +101,7 @@ public class TriageService {
             - Média
             - Alta
 
-            Retorne APENAS JSON.
+            Retorne APENAS JSON. EXCLUSIVAMENTE JSON. NADA ALÉM DE JSON.
 
             Formato obrigatório:
             {

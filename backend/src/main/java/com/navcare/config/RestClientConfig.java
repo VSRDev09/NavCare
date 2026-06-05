@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-    public RestClient restClient(OpenAiProperties properties) {
+    public RestClient restClient(GeminiProperties properties) {
         int timeoutSeconds = properties.getTimeoutSeconds() != null ? properties.getTimeoutSeconds() : 20;
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(timeoutSeconds * 1000);

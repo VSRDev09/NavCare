@@ -4,8 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "navcare.ai.openai")
-public class OpenAiProperties {
+@ConfigurationProperties(prefix = "navcare.ai.gemini")
+public class GeminiProperties {
 
     private String apiKey;
     private String baseUrl;

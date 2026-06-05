@@ -32,11 +32,11 @@ server:
 
 navcare:
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:}
-      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
-      model: ${OPENAI_MODEL:gpt-4o-mini}
-      timeout-seconds: ${OPENAI_TIMEOUT_SECONDS:20}
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+      model: ${GEMINI_MODEL:gemini-2.5-flash}
+      timeout-seconds: ${GEMINI_TIMEOUT_SECONDS:20}
   security:
     jwt-secret: ${JWT_SECRET:navcare-local-dev-secret-change-me}
     jwt-expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}

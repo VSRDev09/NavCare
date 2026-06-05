@@ -25,21 +25,21 @@ Backend da aplicação **Nav.Care**, responsável pelos CRUDs de Especialidades 
 - `service`: regras de negócio
 - `exception`: tratamento global de erros
 - `mapper`: conversão entre entidades e DTOs
-- `integration/ai`: integração com OpenAI
+- `integration/ai`: integração com Gemini
 
 ## Variáveis de ambiente
 
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
-- `OPENAI_API_KEY`
-- `OPENAI_BASE_URL`
-- `OPENAI_MODEL`
-- `OPENAI_TIMEOUT_SECONDS`
+- `GEMINI_API_KEY`
+- `GEMINI_BASE_URL`
+- `GEMINI_MODEL`
+- `GEMINI_TIMEOUT_SECONDS`
 - `JWT_SECRET`
 - `JWT_EXPIRATION_MINUTES`
 
-As credenciais administrativas agora são persistidas no PostgreSQL pela migration de seed. Não deixe senha fixa no código nem no repositório.
+As credenciais administrativas são persistidas no PostgreSQL pela migration de seed. Não deixe senha fixa no código nem no repositório.
 
 ## Execução
 
@@ -60,6 +60,18 @@ mvn spring-boot:run
 ## Swagger
 
 - `http://localhost:8081/swagger`
+
+## Configuração da Gemini API
+
+1. Crie uma API key no [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Copie `/.env.example` para `/.env`.
+3. Preencha `GEMINI_API_KEY` com a chave gerada.
+4. Se quiser, ajuste `GEMINI_MODEL` e `GEMINI_TIMEOUT_SECONDS`.
+5. Reinicie o backend para carregar as variáveis.
+
+## Teste rápido
+
+Envie um relato para `POST /api/triage` e verifique se os logs mostram comunicação com a Gemini em vez do fallback local.
 
 ## Endpoints
 

@@ -12,7 +12,7 @@
       <form [formGroup]="form" (ngSubmit)="submit()" class="admin-auth-form">
         <div>
           <label class="label" for="username">Usuário</label>
-          <input id="username" class="input" type="text" formControlName="username" placeholder="admin">
+          <input id="username" class="input" type="text">
           <div class="field-error" *ngIf="isInvalid('username')">Informe o usuário.</div>
         </div>
 

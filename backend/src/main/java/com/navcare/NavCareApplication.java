@@ -1,13 +1,13 @@
 package com.navcare;
 
-import com.navcare.config.OpenAiProperties;
+import com.navcare.config.GeminiProperties;
 import com.navcare.config.SecurityProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({OpenAiProperties.class, SecurityProperties.class})
+@EnableConfigurationProperties({GeminiProperties.class, SecurityProperties.class})
 public class NavCareApplication {
 
     public static void main(String[] args) {
