@@ -12,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
 @Component
 @Slf4j
@@ -43,71 +41,35 @@ public class GeminiClient {
                                 "parts", List.of(
                                         Map.of("text", prompt)))),
                 "generationConfig", Map.of(
-                        "responseMimeType", "application/json",
-                        "responseSchema", Map.of(
-                                "type", "OBJECT",
-                                "properties", Map.of(
-                                        "specialty", Map.of("type", "STRING"),
-                                        "urgency", Map.of(
-                                                "type", "STRING",
-                                                "enum", List.of("Baixa", "Média", "Alta")),
-                                        "summary", Map.of("type", "STRING")),
-                                "required", List.of("specialty", "urgency", "summary")),
                         "temperature", 0.2,
-                        "maxOutputTokens", 300));
+                        "maxOutputTokens", 800,
+                        "responseMimeType", "application/json",
+                        "thinkingConfig", Map.of(
+                                "thinkingBudget", 120)));
 
         try {
             String response = callGemini(url, body);
-            log.info("Prompt enviado para Gemini: {}", prompt);
-            log.info("Report enviado para Gemini: {}", report);
-            log.info("Resposta bruta da Gemini:\n{}", response);
+
+            log.info("Prompt enviado:\n{}", prompt);
+            log.info("Report enviado:\n{}", report);
+            log.info("Resposta bruta Gemini:\n{}", response);
 
             if (response == null || response.isBlank()) {
-                throw new AiIntegrationException("A IA retornou uma resposta vazia.");
+                throw new AiIntegrationException("IA retornou resposta vazia.");
             }
 
             return extractOutputText(response);
 
-        } catch (RestClientResponseException exception) {
+        } catch (Exception e) {
+            log.warn("Falha ao chamar Gemini. Tipo={}, Motivo={}",
+                    e.getClass().getSimpleName(),
+                    e.getMessage(),
+                    e);
 
-            String responseBody = limit(exception.getResponseBodyAsString(), 2000);
-
-            log.warn(
-                    "Erro HTTP ao chamar a Gemini. status={}, statusText={}, body={}",
-                    exception.getStatusCode().value(),
-                    exception.getStatusText(),
-                    responseBody);
-
-            throw new AiIntegrationException(
-                    "Falha ao comunicar com a IA. HTTP "
-                            + exception.getStatusCode().value()
-                            + " - " + exception.getStatusText()
-                            + ". Resposta: " + responseBody,
-                    exception);
-
-        } catch (ResourceAccessException exception) {
-
-            log.warn("Erro de rede ao chamar a Gemini. Motivo: {}", exception.getMessage(), exception);
-
-            throw new AiIntegrationException(
-                    "Falha ao comunicar com a IA. Erro de rede: " + exception.getMessage(),
-                    exception);
-
-        } catch (Exception exception) {
-
-            if (exception instanceof AiIntegrationException aiEx) {
-                throw aiEx;
-            }
-
-            log.warn(
-                    "Erro inesperado ao chamar a Gemini. Tipo={}, Motivo={}",
-                    exception.getClass().getSimpleName(),
-                    exception.getMessage(),
-                    exception);
-
-            throw new AiIntegrationException("Falha ao comunicar com a IA.", exception);
+            throw new AiIntegrationException("Falha ao comunicar com a IA.", e);
         }
     }
+
 
     private String callGemini(String url, Map<String, Object> body) {
 
@@ -134,7 +96,7 @@ public class GeminiClient {
                 long waitMs = (long) Math.pow(2, attempt) * 1000;
 
                 log.warn(
-                        "Gemini 503 (UNAVAILABLE). Tentativa {}/{}. Retry em {} ms",
+                        "Gemini 503. Tentativa {}/{}. Retry em {} ms",
                         attempt,
                         maxAttempts,
                         waitMs);
@@ -154,42 +116,56 @@ public class GeminiClient {
     }
 
     private String extractOutputText(String response) {
+
         try {
             JsonNode root = objectMapper.readTree(response);
+
             JsonNode candidates = root.path("candidates");
 
             if (candidates.isArray()) {
                 for (JsonNode candidate : candidates) {
-                    JsonNode content = candidate.path("content");
-                    JsonNode parts = content.path("parts");
+
+                    JsonNode parts = candidate
+                            .path("content")
+                            .path("parts");
 
                     if (parts.isArray()) {
                         for (JsonNode part : parts) {
-                            JsonNode text = part.path("text");
-                            if (!text.isMissingNode() && !text.asText().isBlank()) {
-                                return text.asText();
+
+                            String text = part.path("text").asText("");
+
+                            if (!text.isBlank()) {
+
+                                log.debug("Texto bruto da IA: {}", text);
+
+                                return cleanJson(text);
                             }
                         }
                     }
                 }
             }
 
-            return response;
+            throw new AiIntegrationException("Resposta da Gemini sem conteúdo válido.");
 
-        } catch (Exception exception) {
-            throw new AiIntegrationException("Resposta da Gemini inválida.", exception);
+        } catch (Exception e) {
+            throw new AiIntegrationException("Resposta da Gemini inválida.", e);
         }
     }
 
-    private String limit(String value, int maxLength) {
-        if (value == null || value.isBlank()) {
-            return "";
+    private String cleanJson(String text) {
+
+        String cleaned = text.trim();
+
+        cleaned = cleaned.replaceAll("(?s)```json", "");
+        cleaned = cleaned.replaceAll("```", "");
+
+        int start = cleaned.indexOf("{");
+        int end = cleaned.lastIndexOf("}");
+
+        if (start >= 0 && end > start) {
+            return cleaned.substring(start, end + 1);
         }
 
-        String normalized = value.strip().replaceAll("\\s+", " ");
-
-        return normalized.length() <= maxLength
-                ? normalized
-                : normalized.substring(0, maxLength) + "...";
+        return cleaned;
     }
 }
