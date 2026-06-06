@@ -55,6 +55,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, authException) -> {
+
+                System.out.println("AUTH ENTRY POINT => " +request.getMethod() + " " + request.getRequestURI());
+                
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
