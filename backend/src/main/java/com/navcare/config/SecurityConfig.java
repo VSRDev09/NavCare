@@ -52,23 +52,24 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/attendance-rules/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/attendance-rules/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/attendance-rules/**").authenticated()
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, authException) -> {
 
-                System.out.println("AUTH ENTRY POINT => " +request.getMethod() + " " + request.getRequestURI());
-                
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                ErrorResponseDTO errorResponse = ErrorResponseDTO.builder()
-                    .timestamp(LocalDateTime.now())
-                    .status(HttpStatus.UNAUTHORIZED.value())
-                    .error("Não autorizado")
-                    .message("Acesso negado. Faça login para continuar.")
-                    .path(request.getRequestURI())
-                    .build();
-                response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+            System.out.println("AUTH ENTRY POINT => " +
+            request.getMethod() + " " +
+            request.getRequestURI());
+
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+
+            response.getWriter().write("""
+            {
+              "status":401,
+              "error":"Unauthorized"
+            }
+            """);
             }))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin(form -> form.disable())
