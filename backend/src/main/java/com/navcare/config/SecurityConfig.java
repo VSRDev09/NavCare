@@ -58,8 +58,10 @@ public class SecurityConfig {
             .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, authException) -> {
 
             System.out.println("AUTH ENTRY POINT => " +
-            request.getMethod() + " " +
-            request.getRequestURI());
+                                request.getMethod() +
+                                " URI=" + request.getRequestURI() +
+                                " URL=" + request.getRequestURL() +
+                                " SERVLET=" + request.getServletPath());
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
