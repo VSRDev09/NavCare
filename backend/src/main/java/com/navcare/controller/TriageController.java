@@ -21,6 +21,7 @@ public class TriageController {
 
     @PostMapping
     public ResponseEntity<TriageResponseDTO> triage(@Valid @RequestBody TriageRequestDTO request) {
+        System.out.println("CHEGOU NO TRIAGE CONTROLLER");
         return ResponseEntity.ok(triageService.triage(request));
     }
 }
