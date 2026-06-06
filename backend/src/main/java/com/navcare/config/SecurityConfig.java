@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/attendance-rules/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/attendance-rules/**").authenticated()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/health").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, authException) -> {
