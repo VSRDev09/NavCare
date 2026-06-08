@@ -9,6 +9,7 @@ public class SpecialtyRequestDTO {
 
     @NotBlank(message = "O nome da especialidade é obrigatório.")
     @Size(max = 120, message = "O nome da especialidade deve ter no máximo 120 caracteres.")
+    // Aqui eu recebo apenas os dados minimos para cadastrar ou editar uma especialidade.
     private String name;
 
     @NotBlank(message = "A descrição da especialidade é obrigatória.")

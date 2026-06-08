@@ -37,6 +37,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        // Aqui eu separo explicitamente o fluxo publico do administrativo,
+        // porque a triagem precisa continuar acessivel sem login enquanto o
+        // painel de manutencao fica protegido por JWT.
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -56,6 +59,8 @@ public class SecurityConfig {
                 .requestMatchers("/health").permitAll()
                 .anyRequest().authenticated()
             )
+            // Aqui eu devolvo um 401 em JSON para o frontend conseguir tratar
+            // a resposta de forma previsivel sem depender de uma tela padrao do Spring.
             .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, authException) -> {
 
             System.out.println("AUTH ENTRY POINT => " +
@@ -84,6 +89,8 @@ public class SecurityConfig {
 
     @Bean
     public SecretKey jwtSecretKey() {
+        // Aqui eu transformo o segredo textual em uma chave HS256 deterministica,
+        // porque o encoder e o decoder precisam enxergar exatamente a mesma chave.
         String jwtSecret = securityProperties.getJwtSecret();
         if (jwtSecret == null || jwtSecret.isBlank()) {
             throw new IllegalStateException("JWT_SECRET não configurado.");
@@ -110,6 +117,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Aqui eu padronizo o hash com BCrypt para nunca comparar senha em texto puro.
         return new BCryptPasswordEncoder();
     }
 }

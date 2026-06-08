@@ -29,6 +29,8 @@ public class TriageService {
 
     private static final String DEFAULT_SPECIALTY_NAME = "Clínica Geral";
 
+    // Aqui eu concentro toda a orquestracao da triagem para manter o controller fino
+    // e deixar claro onde a IA, o fallback e as regras do banco se encontram.
     private final SpecialtyRepository specialtyRepository;
     private final AttendanceRuleRepository attendanceRuleRepository;
     private final GeminiClient geminiClient;
@@ -37,6 +39,8 @@ public class TriageService {
     @Transactional(readOnly = true)
     public TriageResponseDTO triage(TriageRequestDTO request) {
 
+        // Aqui eu busco as especialidades reais do banco para que a IA e a resposta final
+        // trabalhem sempre com o mesmo catalogo mantido pelo administrador.
         List<Specialty> specialties = specialtyRepository.findAll().stream()
                 .sorted(Comparator.comparing(Specialty::getName))
                 .toList();
@@ -64,6 +68,8 @@ public class TriageService {
 
     private AiTriageResultDTO analyzeWithAiOrFallback(String report, List<Specialty> specialties) {
         try {
+            // Eu prefiro tentar a IA primeiro e cair no fallback so quando houver falha,
+            // porque a resposta inteligente precisa ser o caminho principal do sistema.
             String prompt = buildPrompt(report, specialties);
             String raw = geminiClient.analyze(prompt, report);
 
@@ -78,6 +84,8 @@ public class TriageService {
     
     private String buildPrompt(String report, List<Specialty> specialties) {
 
+        // Eu monto o prompt com especialidades reais do banco para manter a IA presa
+        // ao catalogo atual do Nav.Care.
         String specialtiesList = specialties.stream()
                 .map(s -> "- " + s.getName())
                 .reduce((a, b) -> a + "\n" + b)
@@ -118,6 +126,8 @@ public class TriageService {
   
     private AiTriageResultDTO parseAiResponse(String raw) {
         try {
+            // Eu valido o JSON antes de misturar a resposta da IA com dados do banco,
+            // porque um payload parcial nao pode contaminar a triagem final.
             String json = extractJsonSafe(raw);
 
             AiTriageResultDTO dto = objectMapper.readValue(json, AiTriageResultDTO.class);
@@ -138,6 +148,8 @@ public class TriageService {
   
     private String extractJsonSafe(String response) {
 
+        // Eu extraio apenas o primeiro objeto JSON porque a IA pode devolver texto extra,
+        // markdown ou uma resposta parcialmente truncada.
         if (response == null || response.isBlank()) {
             throw new AiIntegrationException("Resposta vazia da IA.");
         }
@@ -174,7 +186,8 @@ public class TriageService {
             }
         }
 
-        // Caso típico do seu erro (MAX_TOKENS truncou JSON)
+        // Caso típico do erro (MAX_TOKENS truncou JSON)
+        // Eu trato isso como truncamento porque o objeto nao fechou corretamente.
         throw new AiIntegrationException(
                 "JSON veio truncado pela IA (MAX_TOKENS). Resposta parcial: " + json);
     }
@@ -182,6 +195,8 @@ public class TriageService {
  
     private AiTriageResultDTO localFallbackAnalysis(String report, List<Specialty> specialties) {
 
+        // Eu mantenho uma resposta local basica para que a triagem nunca fique vazia
+        // quando a IA estiver indisponivel.
         AiTriageResultDTO dto = new AiTriageResultDTO();
 
         dto.setSpecialty(resolveLocalSpecialty(report, specialties));
@@ -194,6 +209,8 @@ public class TriageService {
     private String resolveLocalSpecialty(String report, List<Specialty> specialties) {
         String n = normalize(report);
 
+        // Eu começo pelos sintomas mais classicos de risco para aproximar o fallback
+        // do raciocinio clinico esperado pelo usuario.
         if (n.contains("peito") || n.contains("cora")) {
             return find("Cardiologia", specialties);
         }
@@ -210,6 +227,8 @@ public class TriageService {
     private String resolveLocalUrgency(String report) {
         String n = normalize(report);
 
+        // Eu marco como alta prioridade quando o texto aponta sinais claros de gravidade,
+        // porque a experiencia do paciente nao pode subestimar sintomas de risco.
         if (n.contains("desma") || n.contains("falta de ar") || n.contains("dor no peito")) {
             return "Alta";
         }
@@ -220,11 +239,15 @@ public class TriageService {
     }
 
     private String buildSummary(String report) {
+        // Eu resumo o texto original sem exagerar para manter a resposta legivel
+        // e ao mesmo tempo preservar o contexto do relato.
         String clean = report.strip().replaceAll("\\s+", " ");
         return clean.length() > 180 ? clean.substring(0, 180) + "..." : clean;
     }
 
     private Specialty resolveSpecialty(String name, List<Specialty> specialties) {
+        // Eu amarro o nome devolvido pela IA a uma especialidade realmente cadastrada,
+        // porque o frontend precisa trabalhar com dados consistentes do banco.
         String n = normalize(name);
 
         return specialties.stream()
@@ -252,14 +275,21 @@ public class TriageService {
     }
 
     private AttendanceRuleSummaryDTO applyUrgencyToWaitTime(AttendanceRuleSummaryDTO rule, String urgency) {
+        // Eu sobreponho a urgencia sobre o tempo base da especialidade porque
+        // o tempo exibido ao paciente precisa refletir prioridade clinica, nao apenas fila cadastrada.
         Integer baseWaitTime = rule.getAverageWaitTime();
         if (baseWaitTime == null) {
             return rule;
         }
 
         int adjustedWaitTime = switch (urgency) {
+            // Aqui eu capei os casos graves para nao passar a impressao de espera longa
+            // quando a triagem ja indicou que o atendimento deve ser prioritario.
             case "Alta" -> Math.min(Math.max(baseWaitTime, 0), 15);
+            // Aqui eu mantenho a faixa intermediaria porque ela precisa evitar extremos,
+            // mas ainda respeitar um valor util para orientacao do usuario.
             case "Média" -> Math.min(Math.max(baseWaitTime, 15), 45);
+            // Aqui eu garanto que a baixa prioridade nao pareca atendimento emergencial.
             default -> Math.max(baseWaitTime, 45);
         };
 

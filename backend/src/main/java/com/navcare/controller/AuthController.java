@@ -21,6 +21,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+        // Eu deixo este login publico porque ele e o unico ponto de entrada do painel administrativo.
         return ResponseEntity.ok(authService.login(request));
     }
 }

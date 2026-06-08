@@ -8,11 +8,13 @@ import { Specialty, SpecialtyRequest } from '../models/specialty.model';
   providedIn: 'root'
 })
 export class SpecialtyService {
+  // Aqui eu mantenho o CRUD de especialidades isolado para nao espalhar URLs pelo app.
   private readonly apiUrl = `${environment.apiUrl}/specialties`;
 
   constructor(private readonly http: HttpClient) {}
 
   findAll(): Observable<Specialty[]> {
+    // Aqui eu consumo a listagem publica para alimentar tanto a area administrativa quanto a triagem.
     return this.http.get<Specialty[]>(this.apiUrl);
   }
 
@@ -21,6 +23,7 @@ export class SpecialtyService {
   }
 
   create(payload: SpecialtyRequest): Observable<Specialty> {
+    // Aqui eu preservo o CRUD administrativo sem espalhar URLs pelo componente.
     return this.http.post<Specialty>(this.apiUrl, payload);
   }
 

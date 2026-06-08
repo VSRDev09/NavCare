@@ -11,6 +11,8 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI navCareOpenAPI() {
+        // Eu documento a API com o nome da aplicacao para manter a entrega coerente
+        // com a identidade visual e o nome exibido para o usuario.
         return new OpenAPI()
             .info(new Info()
                 .title("Nav.Care")

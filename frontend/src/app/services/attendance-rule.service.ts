@@ -8,11 +8,13 @@ import { AttendanceRule, AttendanceRuleRequest } from '../models/attendance-rule
   providedIn: 'root'
 })
 export class AttendanceRuleService {
+  // Aqui eu concentro o CRUD de regras para manter a tela administrativa simples de revisar.
   private readonly apiUrl = `${environment.apiUrl}/attendance-rules`;
 
   constructor(private readonly http: HttpClient) {}
 
   findAll(): Observable<AttendanceRule[]> {
+    // Aqui eu consumo as regras que depois aparecem na resposta enriquecida da triagem.
     return this.http.get<AttendanceRule[]>(this.apiUrl);
   }
 
@@ -21,6 +23,7 @@ export class AttendanceRuleService {
   }
 
   create(payload: AttendanceRuleRequest): Observable<AttendanceRule> {
+    // Aqui eu mantenho a operacao de cadastro isolada para nao duplicar logica no componente.
     return this.http.post<AttendanceRule>(this.apiUrl, payload);
   }
 

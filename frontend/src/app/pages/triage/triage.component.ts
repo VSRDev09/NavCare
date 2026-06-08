@@ -27,6 +27,8 @@ export class TriageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Eu exijo um minimo de texto porque um relato muito curto gera pouca base
+    // para a IA e costuma produzir orientacao fraca.
     this.form = this.formBuilder.group({
       report: ['', [Validators.required, Validators.minLength(15), Validators.maxLength(4000)]]
     });
@@ -39,6 +41,8 @@ export class TriageComponent implements OnInit {
       return;
     }
 
+    // Eu mostro este loading porque a triagem depende de uma chamada externa e o usuario
+    // precisa perceber que o sistema esta processando o relato.
     this.loadingService.show('Analisando sintomas...');
     this.triageService.analyze({ report: this.form.value.report }).pipe(
       finalize(() => this.loadingService.hide())
@@ -59,6 +63,7 @@ export class TriageComponent implements OnInit {
   }
 
   getUrgencyClass(): string {
+    // Eu traduzo a urgencia em classe visual para deixar o resultado rapido de ler.
     const urgency = this.result?.urgency?.toLowerCase();
     if (urgency === 'alta') {
       return 'urgency-high';
@@ -70,6 +75,7 @@ export class TriageComponent implements OnInit {
   }
 
   getUrgencyMessage(): string {
+    // Eu transformo a prioridade em uma mensagem humana para reforcar a orientacao clinica.
     const urgency = this.result?.urgency?.toLowerCase();
     if (urgency === 'alta') {
       return 'Procure atendimento médico com prioridade.';

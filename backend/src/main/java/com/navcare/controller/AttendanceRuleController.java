@@ -29,6 +29,7 @@ public class AttendanceRuleController {
 
     @GetMapping
     public ResponseEntity<List<AttendanceRuleResponseDTO>> findAll() {
+        // Eu mantenho a listagem simples aqui porque a regra de negocio da ordenacao fica no service.
         return ResponseEntity.ok(attendanceRuleService.findAll());
     }
 
@@ -39,6 +40,7 @@ public class AttendanceRuleController {
 
     @PostMapping
     public ResponseEntity<AttendanceRuleResponseDTO> create(@Valid @RequestBody AttendanceRuleRequestDTO dto) {
+        // Eu gero o Location no mesmo padrao do CRUD de especialidades para manter a API consistente.
         AttendanceRuleResponseDTO response = attendanceRuleService.create(dto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")

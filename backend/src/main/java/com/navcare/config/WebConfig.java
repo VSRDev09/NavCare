@@ -15,6 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // Eu mantenho o CORS flexivel porque o front roda tanto localmente
+        // quanto em container, e eu nao quero travar a navegacao por origem fixa.
         List<String> origins = List.of(allowedOrigins.split(",")).stream()
             .map(String::trim)
             .filter(origin -> !origin.isBlank())

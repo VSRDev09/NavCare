@@ -11,6 +11,7 @@ public class AttendanceRuleRequestDTO {
 
     @NotNull(message = "O tempo médio de espera é obrigatório.")
     @Positive(message = "O tempo médio de espera deve ser maior que zero.")
+    // Aqui eu recebo os dados que definem a regra sem carregar a entidade completa.
     private Integer averageWaitTime;
 
     @NotNull(message = "O campo aceita emergência é obrigatório.")

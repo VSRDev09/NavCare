@@ -29,6 +29,7 @@ public class SpecialtyController {
 
     @GetMapping
     public ResponseEntity<List<SpecialtyResponseDTO>> findAll() {
+        // Eu deixo a ordenacao e a conversao para o service para manter o controller previsivel.
         return ResponseEntity.ok(specialtyService.findAll());
     }
 
@@ -39,6 +40,7 @@ public class SpecialtyController {
 
     @PostMapping
     public ResponseEntity<SpecialtyResponseDTO> create(@Valid @RequestBody SpecialtyRequestDTO dto) {
+        // Eu devolvo o Location porque isso ajuda a manter o endpoint bem comportado em REST.
         SpecialtyResponseDTO response = specialtyService.create(dto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
             .path("/{id}")

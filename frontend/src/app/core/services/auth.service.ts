@@ -11,6 +11,8 @@ const AUTH_STORAGE_KEY = 'navcare-auth-session';
   providedIn: 'root'
 })
 export class AuthService {
+  // Aqui eu guardo a sessao no proprio frontend para que o guard e o interceptor
+  // consigam reaproveitar o estado sem depender de backend extra.
   private readonly sessionSubject = new BehaviorSubject<AuthSession | null>(this.loadSession());
   readonly session$ = this.sessionSubject.asObservable();
 
@@ -19,6 +21,7 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   login(request: LoginRequest): Observable<LoginResponse> {
+    // Aqui eu salvo a sessao somente depois que o backend confirmou as credenciais.
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
       tap(response => {
         const expiresAt = Date.now() + response.expiresInSeconds * 1000;
@@ -33,11 +36,14 @@ export class AuthService {
   }
 
   logout(): void {
+    // Aqui eu limpo a sessao local para garantir que o token desapareca do navegador
+    // assim que o admin sair.
     localStorage.removeItem(AUTH_STORAGE_KEY);
     this.sessionSubject.next(null);
   }
 
   hasValidToken(): boolean {
+    // Eu valido a expiração no proprio frontend para nao manter uma sessao morta em memoria.
     const session = this.sessionSubject.value;
     if (!session) {
       return false;
@@ -62,11 +68,14 @@ export class AuthService {
   }
 
   private saveSession(session: AuthSession): void {
+    // Eu persisto a sessao no browser para que o reload da pagina nao derrube o acesso do admin.
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
     this.sessionSubject.next(session);
   }
 
   private loadSession(): AuthSession | null {
+    // Eu tento restaurar a sessao ao iniciar a aplicacao para manter a experiencia
+    // de admin continua quando o token ainda estiver valido.
     const rawSession = localStorage.getItem(AUTH_STORAGE_KEY);
     if (!rawSession) {
       return null;

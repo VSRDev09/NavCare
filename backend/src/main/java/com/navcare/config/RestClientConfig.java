@@ -10,6 +10,7 @@ public class RestClientConfig {
 
     @Bean
     public RestClient restClient(GeminiProperties properties) {
+        // Eu uso timeout configuravel porque a chamada externa nao pode travar a triagem.
         int timeoutSeconds = properties.getTimeoutSeconds() != null ? properties.getTimeoutSeconds() : 20;
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(timeoutSeconds * 1000);

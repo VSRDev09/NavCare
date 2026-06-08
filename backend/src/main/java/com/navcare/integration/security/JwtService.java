@@ -28,6 +28,8 @@ public class JwtService {
     private final SecurityProperties securityProperties;
 
     public String generateToken(String username, Instant issuedAt, Instant expiresAt) {
+        // Aqui eu gero um token enxuto, com as claims minimas que eu preciso
+        // para manter o contrato simples e nao acoplar o frontend a detalhes internos.
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
             .issuer("Nav.Care")
             .subject(username)
@@ -42,11 +44,13 @@ public class JwtService {
     }
 
     public long getExpirationSeconds() {
+        // Eu centralizo esta conversao aqui para nao repetir o calculo em outras camadas.
         Integer minutes = securityProperties.getJwtExpirationMinutes() != null ? securityProperties.getJwtExpirationMinutes() : 480;
         return minutes.longValue() * 60L;
     }
 
     public SecretKey secretKey() {
+        // Eu derivo a chave textual para bytes fixos para manter compatibilidade com HS256.
         String jwtSecret = securityProperties.getJwtSecret();
         if (jwtSecret == null || jwtSecret.isBlank()) {
             throw new AiIntegrationException("JWT_SECRET não configurado.");

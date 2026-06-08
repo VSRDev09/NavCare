@@ -16,6 +16,8 @@ import com.navcare.dto.ErrorResponseDTO;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Aqui eu centralizo o formato de erro para que o frontend sempre receba
+    // a mesma estrutura, independentemente de qual camada disparou a excecao.
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNotFound(ResourceNotFoundException exception, HttpServletRequest request) {
         return build(HttpStatus.NOT_FOUND, "Recurso não encontrado", exception.getMessage(), request.getRequestURI());
@@ -55,6 +57,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno", "Ocorreu um erro inesperado.", request.getRequestURI());
     }
 
+    // Eu concentro a montagem da resposta para nao repetir o mesmo envelope em cada handler.
     private ResponseEntity<ErrorResponseDTO> build(HttpStatus status, String error, String message, String path) {
         return ResponseEntity.status(status).body(ErrorResponseDTO.builder()
             .timestamp(LocalDateTime.now())

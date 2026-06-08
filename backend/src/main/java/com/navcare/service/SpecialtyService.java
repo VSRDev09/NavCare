@@ -19,10 +19,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SpecialtyService {
 
+    // Aqui eu concentro o CRUD de especialidades para evitar que o controller
+    // precise conhecer detalhes de ordenacao, conversao e tratamento de erro.
     private final SpecialtyRepository specialtyRepository;
 
     @Transactional(readOnly = true)
     public List<SpecialtyResponseDTO> findAll() {
+        // Eu ordeno por nome para manter a lista previsivel na tela administrativa
+        // e no prompt usado pela triagem.
         return specialtyRepository.findAll().stream()
             .sorted(Comparator.comparing(Specialty::getName))
             .map(SpecialtyMapper::toResponseDTO)
@@ -37,6 +41,7 @@ public class SpecialtyService {
 
     @Transactional
     public SpecialtyResponseDTO create(SpecialtyRequestDTO dto) {
+        // Eu converto DTO em entidade aqui para manter o controller fino e o contrato limpo.
         Specialty specialty = SpecialtyMapper.toEntity(dto);
         Specialty saved = specialtyRepository.save(specialty);
         return SpecialtyMapper.toResponseDTO(saved);
@@ -44,6 +49,7 @@ public class SpecialtyService {
 
     @Transactional
     public SpecialtyResponseDTO update(Long id, SpecialtyRequestDTO dto) {
+        // Eu reaproveito a entidade carregada para preservar o ciclo de vida do JPA.
         Specialty specialty = getEntityById(id);
         SpecialtyMapper.updateEntity(specialty, dto);
         return SpecialtyMapper.toResponseDTO(specialtyRepository.save(specialty));
@@ -57,6 +63,7 @@ public class SpecialtyService {
 
     @Transactional(readOnly = true)
     public Specialty getEntityById(Long id) {
+        // Eu centralizo a busca aqui para padronizar a mensagem de erro de nao encontrado.
         return specialtyRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Especialidade não encontrada para o id " + id + "."));
     }

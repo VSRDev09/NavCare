@@ -28,13 +28,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
 
+       // Eu mantive estes logs para entender rapidamente o caminho de cada requisicao
+       // durante o debug, principalmente quando eu preciso separar rota publica de rota protegida.
        System.out.println("REQUEST => " + request.getMethod() + " URI=" + request.getRequestURI() +
                           " URL=" + request.getRequestURL() +
                             " SERVLET=" + request.getServletPath()
                             );
 
-        System.out.println("AUTH => " + request.getHeader(HttpHeaders.AUTHORIZATION));
+       System.out.println("AUTH => " + request.getHeader(HttpHeaders.AUTHORIZATION));
             
+        // Eu so tento autenticar quando existe um Bearer token; se nao existir,
+        // eu deixo a requisicao seguir para nao quebrar as rotas publicas.
         String token = extractBearerToken(request.getHeader(HttpHeaders.AUTHORIZATION));
         if (token == null) {
             filterChain.doFilter(request, response);
@@ -50,6 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException exception) {
+            // Se o token estiver invalido, eu limpo o contexto para nao deixar uma autenticacao parcial
+            // contaminar a decisao de acesso da requisicao.
             SecurityContextHolder.clearContext();
         }
 
@@ -63,6 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!authorizationHeader.startsWith("Bearer ")) {
             return null;
         }
+        // Eu removo apenas o prefixo porque quero reaproveitar o token puro na etapa de decode.
         String token = authorizationHeader.substring(7).trim();
         return token.isBlank() ? null : token;
     }

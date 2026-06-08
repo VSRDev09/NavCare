@@ -14,6 +14,8 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private readonly authService: AuthService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Aqui eu anexo JWT apenas nas rotas administrativas porque a area publica precisa
+    // continuar funcionando sem poluir cada requisicao com autenticacao.
     if (!this.shouldAttachToken(request)) {
       return next.handle(request);
     }
@@ -33,6 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private shouldAttachToken(request: HttpRequest<unknown>): boolean {
+    // Eu libero login e triagem porque elas fazem parte do fluxo publico da aplicacao.
     const path = this.getPath(request.url);
     const method = request.method.toUpperCase();
 

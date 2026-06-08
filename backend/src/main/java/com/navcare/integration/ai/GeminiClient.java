@@ -22,12 +22,16 @@ import org.springframework.web.client.HttpServerErrorException;
 @RequiredArgsConstructor
 public class GeminiClient {
 
+    // Aqui eu centralizo toda a conversa com a Gemini para ter um unico ponto de manutencao,
+    // logging e troca de provedor se isso um dia for necessario.
     private final RestClient restClient;
     private final GeminiProperties properties;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String analyze(String prompt, String report) {
 
+        // Eu valido a configuracao antes de qualquer chamada para falhar cedo e cair no fallback
+        // sem gastar uma requisicao desnecessaria.
         log.info("========================================");
         log.info("=== ANALYZE ===");
         log.info("BASE URL: {}", properties.getBaseUrl());
@@ -57,6 +61,7 @@ public class GeminiClient {
                                 "parts", List.of(
                                         Map.of("text", prompt)))),
                 "generationConfig", Map.of(
+                        // Eu deixo a resposta mais controlada para reduzir variacao e manter a saida previsivel.
                         "temperature", 0.2,
                         "maxOutputTokens", 800,
                         "responseMimeType", "application/json",
@@ -91,6 +96,8 @@ public class GeminiClient {
 
     try {
 
+        // Eu separei esta chamada HTTP para conseguir distinguir com clareza falhas de cliente,
+        // falhas de servidor e falhas genericas da rede nos logs.
         log.info("========================================");
         log.info("=== CHAMANDO GEMINI ===");
         log.info("URL: {}", url);
@@ -117,6 +124,8 @@ public class GeminiClient {
 
     } catch (HttpClientErrorException e) {
 
+        // Eu trato os erros 4xx separadamente porque eles normalmente indicam contrato,
+        // credencial ou permissao invalida, e isso e diferente de indisponibilidade.
         log.error("========================================");
         log.error("=== GEMINI CLIENT ERROR ===");
         log.error("TYPE: {}", e.getClass().getName());
@@ -128,6 +137,8 @@ public class GeminiClient {
 
     } catch (HttpServerErrorException e) {
 
+        // Eu trato os erros 5xx separadamente porque aqui normalmente a falha esta do lado
+        // da API ou da infra da Gemini, nao no payload que eu enviei.
         log.error("========================================");
         log.error("=== GEMINI SERVER ERROR ===");
         log.error("TYPE: {}", e.getClass().getName());
@@ -152,6 +163,7 @@ public class GeminiClient {
     private String extractOutputText(String response) {
 
         try {
+            // Eu leio apenas o texto util da resposta para ignorar o envelope JSON da Gemini.
             JsonNode root = objectMapper.readTree(response);
 
             JsonNode candidates = root.path("candidates");
@@ -188,6 +200,7 @@ public class GeminiClient {
 
     private String cleanJson(String text) {
 
+        // Eu limpo cercas de markdown porque o modelo pode devolver o JSON com delimitadores extras.
         String cleaned = text.trim();
 
         cleaned = cleaned.replaceAll("(?s)```json", "");

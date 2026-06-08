@@ -21,6 +21,7 @@ public class TriageController {
 
     @PostMapping
     public ResponseEntity<TriageResponseDTO> triage(@Valid @RequestBody TriageRequestDTO request) {
+        // Eu mantenho o controller fino porque toda a orquestracao da triagem vive no service.
         System.out.println("CHEGOU NO TRIAGE CONTROLLER");
         return ResponseEntity.ok(triageService.triage(request));
     }
