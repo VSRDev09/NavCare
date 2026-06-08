@@ -1,12 +1,14 @@
 # Nav.Care
 
+🌐 **Aplicação em produção:** https://nav-care.vercel.app
+
 **Nav.Care** é um sistema de triagem e navegação inteligente para orientar pacientes ao atendimento médico mais adequado.
 
 ## Estrutura do projeto
 
-- `backend`: API Spring Boot com PostgreSQL, Flyway e integração com Gemini
-- `frontend`: interface Angular responsiva para triagem e área administrativa
-- `docker-compose.yml`: sobe banco, backend e frontend
+* `backend`: API Spring Boot com PostgreSQL, Flyway e integração com Gemini
+* `frontend`: interface Angular responsiva para triagem e área administrativa
+* `docker-compose.yml`: sobe banco, backend e frontend
 
 ## Fluxo principal
 
@@ -20,9 +22,9 @@
 
 ## Identidade visual
 
-- Nome exibido: **🏥 Nav.Care**
-- Subtítulo: **Triagem Inteligente para Direcionamento Médico**
-- Paleta: vermelho hospitalar, branco e cinza claro
+* Nome exibido: **🏥 Nav.Care**
+* Subtítulo: **Triagem Inteligente para Direcionamento Médico**
+* Paleta: vermelho hospitalar, branco e cinza claro
 
 ## Execução local
 
@@ -37,16 +39,16 @@ O projeto usa um `.env` na raiz para centralizar a configuração sensível do b
 
 ### Variáveis principais
 
-- `DB_URL`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `SERVER_PORT`
-- `GEMINI_API_KEY`
-- `GEMINI_BASE_URL`
-- `GEMINI_MODEL`
-- `GEMINI_TIMEOUT_SECONDS`
-- `JWT_SECRET`
-- `JWT_EXPIRATION_MINUTES`
+* `DB_URL`
+* `DB_USERNAME`
+* `DB_PASSWORD`
+* `SERVER_PORT`
+* `GEMINI_API_KEY`
+* `GEMINI_BASE_URL`
+* `GEMINI_MODEL`
+* `GEMINI_TIMEOUT_SECONDS`
+* `JWT_SECRET`
+* `JWT_EXPIRATION_MINUTES`
 
 ### Como usar
 
@@ -61,7 +63,7 @@ O frontend usa `/api` como base, então normalmente não precisa de variável pr
 
 ## Como gerar e testar a chave Gemini
 
-1. Acesse o [Google AI Studio](https://aistudio.google.com/app/apikey).
+1. Acesse o Google AI Studio.
 2. Clique para criar uma nova API key.
 3. Copie a chave para o seu arquivo `/.env`.
 4. Rode o backend e faça uma requisição `POST /api/triage`.
@@ -75,4 +77,4 @@ docker compose up --build
 
 ## Swagger
 
-- `http://localhost:8081/swagger`
+* `http://localhost:8081/swagger`
