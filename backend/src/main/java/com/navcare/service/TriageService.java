@@ -50,6 +50,7 @@ public class TriageService {
                 .stream()
                 .filter(Objects::nonNull)
                 .map(AttendanceRuleMapper::toSummaryDTO)
+                .map(rule -> applyUrgencyToWaitTime(rule, normalizeUrgency(aiResult.getUrgency())))
                 .toList();
 
         TriageResponseDTO response = new TriageResponseDTO();
@@ -248,6 +249,22 @@ public class TriageService {
         if (n.contains("media"))
             return "Média";
         return "Baixa";
+    }
+
+    private AttendanceRuleSummaryDTO applyUrgencyToWaitTime(AttendanceRuleSummaryDTO rule, String urgency) {
+        Integer baseWaitTime = rule.getAverageWaitTime();
+        if (baseWaitTime == null) {
+            return rule;
+        }
+
+        int adjustedWaitTime = switch (urgency) {
+            case "Alta" -> Math.min(Math.max(baseWaitTime, 0), 15);
+            case "Média" -> Math.min(Math.max(baseWaitTime, 15), 45);
+            default -> Math.max(baseWaitTime, 45);
+        };
+
+        rule.setAverageWaitTime(adjustedWaitTime);
+        return rule;
     }
 
     private String normalize(String v) {
