@@ -37,7 +37,3 @@ O frontend consome a API do backend por rota relativa:
 - `/api`
 
 No desenvolvimento local, o Angular usa `proxy.conf.json` para encaminhar `/api` para `http://localhost:8081`.
-
-## Arquivo `.env`
-
-O frontend não precisa de segredo próprio. Se você quiser padronizar a configuração do projeto inteiro, use o `.env` da raiz para o backend e para o Docker Compose.

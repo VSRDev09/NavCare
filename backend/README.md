@@ -39,19 +39,19 @@ Backend da aplicação **Nav.Care**, responsável pelos CRUDs de Especialidades 
 - `JWT_SECRET`
 - `JWT_EXPIRATION_MINUTES`
 
-As credenciais administrativas são persistidas no PostgreSQL pela migration de seed. Não deixe senha fixa no código nem no repositório.
+As credenciais administrativas são persistidas no PostgreSQL pela migration de seed.
 
 ## Execução
 
 O projeto foi configurado para rodar com **Java 25**. Se o ambiente estiver em outra versão, o build e a aplicação vão falhar de propósito para evitar comportamento fora da base esperada.
 
-O backend também tenta carregar automaticamente o arquivo `.env` da raiz do projeto quando você executa a aplicação localmente a partir da pasta `backend` ou da raiz do repositório.
+O backend também tenta carregar automaticamente o arquivo `.env` da raiz do projeto quando executa a aplicação localmente a partir da pasta `backend` ou da raiz do repositório.
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Se você estiver no Windows sem wrapper, use:
+No Windows sem wrapper, use:
 
 ```bash
 mvn spring-boot:run

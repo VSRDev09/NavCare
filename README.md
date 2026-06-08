@@ -20,11 +20,6 @@
 6. O backend busca as regras associadas e devolve a resposta enriquecida.
 7. O frontend exibe o resultado de forma clara, bonita e responsiva.
 
-## Identidade visual
-
-* Nome exibido: **🏥 Nav.Care**
-* Subtítulo: **Triagem Inteligente para Direcionamento Médico**
-* Paleta: vermelho hospitalar, branco e cinza claro
 
 ## Execução local
 
@@ -32,10 +27,6 @@
 2. Suba o PostgreSQL ou use `docker compose`.
 3. Inicie o backend em `backend`.
 4. Inicie o frontend em `frontend`.
-
-## Arquivo `.env`
-
-O projeto usa um `.env` na raiz para centralizar a configuração sensível do backend e do Docker.
 
 ### Variáveis principais
 
